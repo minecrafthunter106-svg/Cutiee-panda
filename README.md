@@ -1,0 +1,296 @@
+<!-- Save this entire file as index.html and open in a browser -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Birthday — Cute Panda</title>
+<style>
+  :root{
+    --bg1:#CDEDF6; /* changed background to pastel teal */
+    --bg2:#EAF9F1;
+    --card:#ffffffcc;
+    --accent:#FF7AB6;
+    --muted:#5b6b6f;
+    --glass: rgba(255,255,255,0.65);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+    color:#15303a;
+  }
+  .wrap{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85)); border-radius:16px; padding:20px; box-shadow: 0 10px 40px rgba(10,30,40,0.12)}
+  .top{display:flex;align-items:center;justify-content:space-between}
+  h1{margin:0;font-size:22px}
+  .sub{color:var(--muted);font-size:13px}
+  .center{text-align:center}
+  .controls{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  button{background:linear-gradient(90deg,var(--accent),#7c5bff);border:none;padding:10px 14px;border-radius:10px;cursor:pointer;color:white;font-weight:700;box-shadow:0 6px 18px rgba(124,91,255,0.18)}
+  .ghost{background:transparent;border:1px solid rgba(20,40,40,0.06);color:var(--muted);padding:10px 12px;border-radius:8px;cursor:pointer}
+  .small{font-size:13px;color:var(--muted)}
+  .stage{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.5));display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+  #noBtn{position:relative;transition:transform .2s ease}
+  .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:999}
+  .cake{width:260px;height:200px;position:relative;margin:0 auto}
+  .slice{position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:220px;height:160px;border-radius:18px 18px 8px 8px;background:#ffd7e8;box-shadow:0 8px 0 rgba(0,0,0,0.12);overflow:hidden;display:flex;align-items:flex-start;justify-content:center;flex-direction:column;padding-top:18px}
+  .slice .candles{display:flex;gap:8px}
+  .slice.cut{transform:translateX(-25%) rotate(-6deg);transition:all .6s cubic-bezier(.2,.8,.2,1)}
+  .wishBox{margin-top:12px;background:var(--glass);padding:12px;border-radius:10px;color:#08323a;min-height:84px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center}
+  .wishBox img{max-width:220px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+  .hidden{display:none}
+  .panel{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);width:100%}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="text"], input[type="datetime-local"], input[type="password"]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent}
+  .row{display:flex;gap:10px}
+  .col{flex:1}
+  footer{margin-top:12px;text-align:center;color:var(--muted);font-size:13px}
+  /* small animations */
+  .pulse{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+  .big-title{font-size:30px;margin:8px 0 4px}
+  .flirty{color:var(--accent);font-weight:800}
+  @media(max-width:720px){ .stage{flex-direction:column} .cake{transform:scale(.9)} }
+</style>
+</head>
+<body>
+<canvas id="confetti" class="confetti-canvas"></canvas>
+<div class="wrap" id="app">
+  <div class="top">
+    <div>
+      <h1>Happy Wishes — <span class="flirty">Panda Edition</span></h1>
+      <div class="small">All "panda" text used — background changed. No Firebase.</div>
+    </div>
+    <div class="small">Local demo • open file in browser</div>
+  </div>
+
+  <!-- MAIN STAGE - DIRECTLY VISIBLE NOW -->
+  <div id="mainStage">
+    <div class="stage center">
+      <div style="flex:1;min-width:320px">
+        <div class="center">
+          <div class="big-title">Do you wanna see me make something?</div>
+          <div class="controls" style="margin-top:10px">
+            <button id="yesBtn" class="pulse">Yes</button>
+            <button id="noBtn" class="ghost">No</button>
+          </div>
+        </div>
+
+        <div class="center" style="margin-top:18px">
+          <div class="small">Decorate</div>
+          <button id="decorateBtn" class="btn">Make it colorful</button>
+        </div>
+
+        <div class="center" style="margin-top:18px">
+          <div class="small">Cut the Cake</div>
+          <div class="cake" aria-hidden="true">
+            <div class="slice" id="cake">
+              <div class="candles" id="candles">
+                <div style="width:6px;height:22px;background:#fff;border-radius:3px;box-shadow:0 2px 0 rgba(0,0,0,0.12)"></div>
+                <div style="width:6px;height:22px;background:#fff;border-radius:3px;box-shadow:0 2px 0 rgba(0,0,0,0.12)"></div>
+                <div style="width:6px;height:22px;background:#fff;border-radius:3px;box-shadow:0 2px 0 rgba(0,0,0,0.12)"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls" style="margin-top:10px">
+            <button id="cutBtn" class="btn">Cut</button>
+            <button id="uploaderToggle" class="ghost">Uploader (local)</button>
+          </div>
+
+          <div id="wish" class="wishBox hidden">
+            <!-- default text updated with "panda" -->
+            <div style="font-weight:800">Happy Birthday, cute panda!</div>
+            <div class="small">You are amazing — stay cute 🐼</div>
+          </div>
+
+          <div id="counter" class="small" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- right side: uploader local panel -->
+      <div style="width:320px;min-width:260px">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:800">Local Controls</div>
+            <div class="small">Customize (local)</div>
+          </div>
+          <div style="margin-top:8px">
+            <label>Wish text (will replace "panda" text)</label>
+            <input id="wishInput" type="text" placeholder="Type your flirty wish (e.g., Happy Birthday panda!)">
+          </div>
+          <div style="margin-top:8px">
+            <label>Upload image (jpg/png)</label>
+            <input id="imgInput" type="file" accept="image/*">
+          </div>
+          <div style="margin-top:8px">
+            <label>Special time (for counter)</label>
+            <input id="timeInput" type="datetime-local">
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="applyBtn" class="btn">Apply</button>
+            <button id="resetBtn" class="ghost">Reset</button>
+          </div>
+          <div class="small" style="margin-top:8px">Everything is local — share file manually if you want others to see.</div>
+        </div>
+      </div>
+    </div>
+    <footer>Tip: All "mam" replaced with "panda". No password required now!</footer>
+  </div>
+</div>
+
+<script>
+/* ---------- REMOVED PASSWORD PROTECTION ----------
+   Direct access to all features
+*/
+
+/* ---------- Yes/No dodge ----------
+*/
+const noBtn = document.getElementById('noBtn');
+function moveNo(){
+  const parent = noBtn.parentElement.getBoundingClientRect();
+  const max = parent.width - 120;
+  const x = Math.floor(Math.random() * Math.max(1, max));
+  noBtn.style.transform = `translateX(${x}px)`;
+}
+setInterval(moveNo,2000);
+
+/* ---------- Confetti (simple) ----------
+   canvas confetti, spawn on decorate.
+*/
+const confettiCanvas = document.getElementById('confetti');
+const ctx = confettiCanvas.getContext('2d');
+function fitCanvas(){ confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
+window.addEventListener('resize', fitCanvas);
+fitCanvas();
+let confetti = [];
+function spawnConfetti(n=80){
+  for(let i=0;i<n;i++){
+    confetti.push({x:Math.random()*innerWidth,y:-20, vx:(Math.random()-0.5)*4, vy:Math.random()*3+2, r:6+Math.random()*8, rot:Math.random()*6});
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  for(let i=confetti.length-1;i>=0;i--){
+    const p = confetti[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.rot += 0.08;
+    ctx.save();
+    ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+    ctx.fillStyle = `hsl(${(p.x+p.y)%360} 80% 60%)`;
+    ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r);
+    ctx.restore();
+    if(p.y > innerHeight + 50) confetti.splice(i,1);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+document.getElementById('decorateBtn').onclick = ()=> spawnConfetti(110);
+
+/* ---------- Cake cut ----------
+*/
+const cake = document.getElementById('cake');
+const cutBtn = document.getElementById('cutBtn');
+const wishBox = document.getElementById('wish');
+
+cutBtn.onclick = ()=>{
+  cake.classList.toggle('cut');
+  wishBox.classList.toggle('hidden');
+}
+
+/* ---------- Local uploader/apply ----------
+*/
+const imgInput = document.getElementById('imgInput');
+const applyBtn = document.getElementById('applyBtn');
+const wishInput = document.getElementById('wishInput');
+const resetBtn = document.getElementById('resetBtn');
+const timeInput = document.getElementById('timeInput');
+let localImageURL = null;
+let counterInterval = null;
+const wishDiv = wishBox;
+
+imgInput.onchange = (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=> {
+    localImageURL = ev.target.result;
+  }
+  reader.readAsDataURL(f);
+}
+
+applyBtn.onclick = ()=>{
+  // apply wish text
+  const w = wishInput.value.trim();
+  if(w) {
+    // replace any occurrence of "mam" to "panda" just in case
+    const fixed = w.replace(/mam/gi, 'panda');
+    wishDiv.querySelector('div').textContent = fixed;
+  } else {
+    wishDiv.querySelector('div').textContent = 'Happy Birthday, cute panda!';
+  }
+
+  // image
+  if(localImageURL){
+    // inject or replace img
+    let im = wishDiv.querySelector('img');
+    if(!im){
+      im = document.createElement('img');
+      wishDiv.appendChild(im);
+    }
+    im.src = localImageURL;
+  }
+
+  // time (for counter)
+  if(counterInterval) { clearInterval(counterInterval); counterInterval = null; }
+  const t = timeInput.value; // this is in local datetime format "YYYY-MM-DDTHH:MM"
+  if(t){
+    // show time since that datetime (positive)
+    function tick(){
+      const dt = new Date(t);
+      let diff = Math.floor((Date.now() - dt.getTime())/1000);
+      if(diff < 0) diff = -diff;
+      const days = Math.floor(diff/86400); diff %= 86400;
+      const hours = Math.floor(diff/3600); diff %= 3600;
+      const mins = Math.floor(diff/60); const secs = diff % 60;
+      document.getElementById('counter').textContent = `${days} days ${hours} hours ${mins} min ${secs} sec`;
+    }
+    tick();
+    counterInterval = setInterval(tick,1000);
+  } else {
+    document.getElementById('counter').textContent = '';
+  }
+}
+
+/* ---------- Reset ----------
+*/
+resetBtn.onclick = ()=>{
+  wishInput.value = '';
+  imgInput.value = '';
+  timeInput.value = '';
+  localImageURL = null;
+  wishDiv.querySelector('div').textContent = 'Happy Birthday, cute panda!';
+  const im = wishDiv.querySelector('img');
+  if(im) im.remove();
+  document.getElementById('counter').textContent = '';
+  if(counterInterval){ clearInterval(counterInterval); counterInterval = null; }
+}
+
+/* ---------- Auto start confetti on page load ----------
+*/
+function startConfetti(auto=true){
+  if(auto) spawnConfetti(120);
+}
+
+// Auto start confetti when page loads
+window.onload = function() {
+  startConfetti(true);
+}
+
+/* prevent accidental text "mam" - global replace in UI (just in case) */
+(function replaceMamInPage(){
+  document.body.innerHTML = document.body.innerHTML.replace(/mam/gi, 'panda');
+})();
+</script>
+</body>
+</html>
